@@ -6,19 +6,6 @@
     <br>
 </p>
 
-
-
-[![Latest Stable Version](https://poser.pugx.org/reagordi/actions/v/stable.png)](https://packagist.org/packages/reagordi/actions)
-[![Total Downloads](https://poser.pugx.org/reagordi/actions/downloads.png)](https://packagist.org/packages/reagordi/actions)
-[![Build status](https://github.com/reagordi/actions/workflows/build/badge.svg)](https://github.com/reagordi/actions/actions?query=workflow%3Abuild)
-[![Code Coverage](https://codecov.io/gh/reagordi/actions/branch/master/graph/badge.svg)](https://codecov.io/gh/reagordi/actions)
-
-[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Freagordi%2Factions%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/reagordi/actions/main)
-
-[![static analysis](https://github.com/reagordi/actions/workflows/static%20analysis/badge.svg)](https://github.com/reagordi/actions/actions?query=workflow%3A%22static+analysis%22)
-[![type-coverage](https://shepherd.dev/github/reagordi/actions/coverage.svg)](https://shepherd.dev/github/reagordi/actions)
-[![psalm-level](https://shepherd.dev/github/reagordi/actions/level.svg)](https://shepherd.dev/github/reagordi/actions)
-
 ## General usage
 
 This package allows us to reuse GitHub actions, which simplifies version management.
