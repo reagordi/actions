@@ -1,34 +1,54 @@
-name: composer-require-checker
+name: phpbench
 
 on:
   workflow_call:
     inputs:
+      coverage:
+        description: Generate code coverage report.
+        default: pcov
+        required: false
+        type: string
       composer-command:
         description: Composer command to run.
         default: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
         required: false
-        type: string
-      config:
-        description: A path to config file.
-        required: false
-        type: string
-        default: ""
-      os:
-        description: Operating systems to test, separated by comma.
-        required: true
-        type: string
-      php:
-        description: PHP versions to test, separated by comma.
-        required: true
         type: string
       extensions:
         description: List of extensions to PHP.
         default:
         required: false
         type: string
+      ini-values:
+        description: Initial values for PHP configuration.
+        default: date.timezone='UTC'
+        required: false
+        type: string
+      os:
+        description: Os to test, separated by comma.
+        required: true
+        type: string
+      php:
+        description: PHP versions to test, separated by comma.
+        required: true
+        type: string
+      tools:
+        description: Tools to test, separated by comma.
+        default: composer:v2
+        required: false
+        type: string
+      report:
+        description: Report name.
+        default: default
+        required: false
+        type: string
+      config-file:
+        description: Config file name.
+        default: phpbench.json
+        required: false
+        type: string
 
 jobs:
-  composer-require-checker:
+  phpbench:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}
 
     runs-on: ${{ matrix.os }}
@@ -45,13 +65,19 @@ jobs:
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          coverage: ${{ inputs.coverage }}
           extensions: ${{ inputs.extensions }}
-          tools: composer:v2
-          coverage: none
+          ini-values: ${{ inputs.ini-values }}
+          php-version: ${{ matrix.php }}
+          tools: ${{ inputs.tools }}
 
       - name: Determine composer cache directory on Linux.
+        if: matrix.os == 'ubuntu-latest'
         run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+
+      - name: Determine composer cache directory on Windows.
+        if: matrix.os == 'windows-latest'
+        run: echo "COMPOSER_CACHE_DIR=~\AppData\Local\Composer" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Cache dependencies installed with composer.
         uses: actions/cache@v4
@@ -67,5 +93,5 @@ jobs:
       - name: Install dependencies with composer.
         run: ${{ inputs.composer-command }}
 
-      - name: Check dependencies.
-        run: args=(); test -n "${{ inputs.config }}" && args+=("--config-file=${{ inputs.config }}"); vendor/bin/composer-require-checker ${args[@]}
+      - name: Run phpbench.
+        run: vendor/bin/phpbench run --ansi --report=${{ inputs.report }} --config=${{ inputs.config-file }}

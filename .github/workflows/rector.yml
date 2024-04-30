@@ -1,23 +1,76 @@
-on:
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
-
 name: rector
+
+on:
+  workflow_call:
+    inputs:
+      composer-command:
+        description: Composer command to run
+        default: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        required: false
+        type: string
+      os:
+        description: OS to test, separated by comma
+        required: true
+        type: string
+      php:
+        description: PHP versions to test, separated by comma
+        required: true
+        type: string
+      extensions:
+        description: List of extensions to PHP
+        required: false
+        type: string
+    secrets:
+      token:
+        description: GitHub classic token with repo and workflow scopes
+        required: false
 
 jobs:
   rector:
-    uses: reagordi/actions/.github/workflows/rector.yml@master
-    secrets:
-      token: ${{ secrets.REAGORDI_GITHUB_TOKEN }}
-    with:
-      os: >-
-        ['ubuntu-latest']
-      php: >-
-        ['8.3']
+    name: PHP ${{ matrix.php }}-${{ matrix.os }}
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: ${{ fromJson(inputs.os) }}
+        php: ${{ fromJson(inputs.php) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.token || github.token }}
+          ref: ${{ github.head_ref }}
+
+      - name: Install PHP with extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ${{ inputs.extensions }}
+          tools: composer:v2
+          coverage: none
+
+      - name: Determine composer cache directory on Linux
+        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
+
+      - name: Cache dependencies installed with composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: php${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: |
+            php${{ matrix.php }}-composer-
+
+      - name: Update composer
+        run: composer self-update
+
+      - name: Install dependencies with composer
+        run: ${{ inputs.composer-command }}
+
+      - run: vendor/bin/rector process --ansi
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Apply Rector changes (CI)"

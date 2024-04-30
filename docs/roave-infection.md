@@ -1,4 +1,6 @@
-on:
+# Using [Infection](https://infection.github.io/) mutation framework with [Infection Static Analysis Plugin](https://github.com/Roave/infection-static-analysis-plugin)
+
+```yml
   pull_request:
     paths-ignore:
       - 'docs/**'
@@ -6,16 +8,17 @@ on:
       - 'CHANGELOG.md'
       - '.gitignore'
       - '.gitattributes'
+      - 'infection.json.dist'
       - 'psalm.xml'
 
   push:
-    branches: ['master']
     paths-ignore:
       - 'docs/**'
       - 'README.md'
       - 'CHANGELOG.md'
       - '.gitignore'
       - '.gitattributes'
+      - 'infection.json.dist'
       - 'psalm.xml'
 
 name: mutation test
@@ -30,3 +33,4 @@ jobs:
         ['8.2']
     secrets:
       STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+```

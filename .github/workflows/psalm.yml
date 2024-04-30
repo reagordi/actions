@@ -1,4 +1,4 @@
-name: composer-require-checker
+name: psalm
 
 on:
   workflow_call:
@@ -8,13 +8,13 @@ on:
         default: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
         required: false
         type: string
-      config:
-        description: A path to config file.
+      psalm-config:
+        description: Psalm configuration file.
+        default: psalm.xml
         required: false
         type: string
-        default: ""
       os:
-        description: Operating systems to test, separated by comma.
+        description: Os to test, separated by comma.
         required: true
         type: string
       php:
@@ -28,7 +28,7 @@ on:
         type: string
 
 jobs:
-  composer-require-checker:
+  psalm:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}
 
     runs-on: ${{ matrix.os }}
@@ -45,10 +45,10 @@ jobs:
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
         with:
+          coverage: none
           php-version: ${{ matrix.php }}
           extensions: ${{ inputs.extensions }}
-          tools: composer:v2
-          coverage: none
+          tools: composer:v2, cs2pr
 
       - name: Determine composer cache directory on Linux.
         run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
@@ -67,5 +67,5 @@ jobs:
       - name: Install dependencies with composer.
         run: ${{ inputs.composer-command }}
 
-      - name: Check dependencies.
-        run: args=(); test -n "${{ inputs.config }}" && args+=("--config-file=${{ inputs.config }}"); vendor/bin/composer-require-checker ${args[@]}
+      - name: Static analysis.
+        run: vendor/bin/psalm --config=${{ inputs.psalm-config }} --shepherd --stats --output-format=github --php-version=${{ matrix.php }}

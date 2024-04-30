@@ -1,3 +1,6 @@
+# Using [Psalm](https://github.com/vimeo/psalm)
+
+```yml
 on:
   pull_request:
     paths-ignore:
@@ -7,10 +10,9 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
-      - 'phpunit.xml.dist'
+      - 'psalm.xml'
 
   push:
-    branches: ['master']
     paths-ignore:
       - 'docs/**'
       - 'README.md'
@@ -18,7 +20,7 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
-      - 'phpunit.xml.dist'
+      - 'psalm.xml'
 
 name: static analysis
 
@@ -29,4 +31,5 @@ jobs:
       os: >-
         ['ubuntu-latest']
       php: >-
-        ['8.1', '8.2', '8.3']
+        ['8.2']
+```

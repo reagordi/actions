@@ -1,3 +1,6 @@
+# Using [esc](https://github.com/easy-coding-standard/easy-coding-standard)
+
+```yml
 on:
   pull_request:
     paths-ignore:
@@ -7,10 +10,11 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
+      - 'phpunit.xml.dist'
       - 'psalm.xml'
 
   push:
-    branches: ['master']
+    branches: ['main']
     paths-ignore:
       - 'docs/**'
       - 'README.md'
@@ -18,17 +22,17 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
+      - 'phpunit.xml.dist'
       - 'psalm.xml'
 
-name: build
+name: ecs
 
 jobs:
-  phpunit:
-    uses: reagordi/actions/.github/workflows/phpunit.yml@master
-    secrets:
-      codecovToken: ${{ secrets.CODECOV_TOKEN }}
+  easy-coding-standard:
+    uses: reagordi/actions/.github/workflows/ecs.yml@main
     with:
       os: >-
-        ['ubuntu-latest', 'windows-latest']
+        ['ubuntu-latest']
       php: >-
-        ['8.1', '8.2', '8.3']
+        ['8.2']
+```
