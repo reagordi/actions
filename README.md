@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://github.com/reagordi" target="_blank">
-        <img src="https://avatars.githubusercontent.com/u/79301854" height="100px">
+        <img src="https://raw.githubusercontent.com/reagordi/docs/main/images/logo.png" alt="Reagordi" height="100px" />
     </a>
     <h1 align="center">Reagordi GitHub Actions</h1>
     <br>
